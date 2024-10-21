@@ -1,12 +1,24 @@
 <?php
 
 require '../dbcon.php';
+require '../utility.php';
+
+$uploadDir = "D:".DIRECTORY_SEPARATOR."Apache".DIRECTORY_SEPARATOR."Apache24".DIRECTORY_SEPARATOR."htdocs".DIRECTORY_SEPARATOR."upl_imgs".DIRECTORY_SEPARATOR."instrutores_pfp".DIRECTORY_SEPARATOR;
 
 if ($_SERVER['REQUEST_METHOD'] === "GET") {
     if (empty($_GET[''])) {
         try {
             $stmt = $conn->query("SELECT * FROM instrutores");
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType;
+            for ($i = 0; $i < count($result); $i++) {
+                $mimeType = finfo_file($finfo, $result[$i]["url_foto_instrutor"]);
+                $result[$i]['url_foto_instrutor'] = "data:" . $mimeType . ";base64," . base64_encode(file_get_contents($result[$i]["url_foto_instrutor"]));
+            }
+            finfo_close($finfo);
+
             echo json_encode(['success' => $result]);
         } catch (PDOException $e) {
             echo json_encode(['error' => $e->getMessage()]);
@@ -34,9 +46,18 @@ if ($_SERVER['REQUEST_METHOD'] === "GET") {
             $stmt = $conn->prepare($query);
             $stmt->execute($params);
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            echo json_encode(['success' => $result]);
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType;
+            for ($i = 0; $i < count($result); $i++) {
+                $mimeType = finfo_file($finfo, $result[$i]["url_foto_instrutor"]);
+                $result[$i]['url_foto_instrutor'] = "data:" . $mimeType . ";base64," . base64_encode(file_get_contents($result[$i]["url_foto_instrutor"]));
+            }
+            finfo_close($finfo);
+
+            echo json_encode(['success', $result]);
         } catch (PDOException $e) {
-            echo json_encode(['error' => $e->getMessage()]);
+            echo json_encode(['error', $e->getMessage()]);
         }
     } 
 }
@@ -90,25 +111,17 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     }
 
     verifyName($_POST['nome_instrutor'] ?? null);
-    verifyTelefone($_POST['telefone_intrutor'] ?? null);
+    verifyTelefone($_POST['telefone_instrutor'] ?? null);
 
     verifySex($_POST['sexo_instrutor'] ?? null);
     $_POST['sexo_instrutor'] = strtoupper($_POST['sexo_instrutor']);
 
-    $uploadDir = "";
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $uploadDir = '../upl_imgs/';
-        $uploadFile = $uploadDir . basename($_FILES['image']['name']);
-
-        if (!move_uploaded_file($_FILE['image']['tmp_name'], $uploadFile)) {
-            echo json_encode(['error' => "Falha ao mover arquivo enviado"]);
-            exit;
-        }
-    } else {
-        echo json_encode(['error' => "Arquivo inválido"]);
+    $uploadFile = verifyImage($_FILES['url_foto_instrutor'] ?? null, $uploadDir);
+    if (!move_uploaded_file($_FILES['url_foto_instrutor']['tmp_name'], $uploadFile)) {
+        echo json_encode(['error' => "Falha ao mover arquivo enviado: " . error_get_last()["message"]]);
         exit;
     }
-
+    
     ##POST EVERYTHING
     try {
         $stmt = $conn->prepare("INSERT INTO instrutores 
@@ -122,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $stmt->bindParam(":nome", $_POST['nome_instrutor'], PDO::PARAM_STR);
         $stmt->bindParam(':sexo', $_POST['sexo_instrutor'], PDO::PARAM_STR_CHAR);
         $stmt->bindParam(':telefone', $_POST['telefone_instrutor'], PDO::PARAM_STR);
-        $stmt->bindParam(':url_f', $uploadDir, PDO::PARAM_STR);
+        $stmt->bindParam(':url_f', $uploadFile, PDO::PARAM_STR);
 
         $stmt->execute();
 
@@ -132,4 +145,130 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === "PUT")
+if ($_SERVER['REQUEST_METHOD'] === "PUT") {
+    $data = formDataPutRead(file_get_contents("php://input"), 'url_foto_instrutor');
+        ##GENERAL VERIFICATION
+    verifyCPF($data['cpf_instrutor'] ?? null);
+    try {
+        $stmt = $conn->prepare("SELECT * FROM instrutores WHERE cpf_instrutor = :cpf");
+        $stmt->bindParam(":cpf", $data['cpf_instrutor'], PDO::PARAM_STR);
+        $stmt->execute();
+        $result = $stmt->fetchAll();
+        if (count($result) <= 0) {
+            echo json_encode(['error', "Instrutor não existente"]);
+            exit;
+        }
+    } catch (PDOException $e) {
+        echo json_encode(["error", $e->getMessage()]);
+        exit;
+    }
+
+    verifyCEP($data['cep_instrutor'] ?? null);
+    try {
+        $stmt = $conn->prepare("SELECT * FROM instrutores WHERE cep_instrutor = :cep");
+        $stmt->bindParam(":cep", $data['cep_instrutor']);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (count($result) > 1 || (count($result) === 1 && $result[0]['cep_instrutor'] !== $data['cep_instrutor'])) {
+            unlink($data['url_foto_instrutor']['tmp_name']);
+            echo json_encode(['error' => 'CEP já existente']);
+            exit;
+        }
+    } catch (PDOException $e) {
+        unlink($data['url_foto_instrutor']['tmp_name']);
+        echo json_encode(['error' => $e->getMessage()]);
+        exit;
+    }
+
+    verifyAge($data['data_nascimento_instrutor'] ?? null);
+
+    verifyEmail($data['email_instrutor'] ?? null);
+    try {
+        $stmt = $conn->prepare('SELECT * FROM instrutores WHERE email_instrutor = :email');
+        $stmt->bindParam(":email", $data['email_instrutor']);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        if (count($result) > 1|| (count($result) === 1 && $result[0]['email_instrutor'] !== $data['email_instrutor'])) {
+            echo json_encode(['error'=> 'Email já existente']);
+            exit;
+        }
+    } catch (PDOException $e) {
+        unlink($data['url_foto_instrutor']['tmp_name']);
+        echo json_encode(['error'=> $e->getMessage()]);
+        exit;
+    }
+
+    verifyName($data['nome_instrutor'] ?? null);
+    verifyTelefone($data['telefone_instrutor'] ?? null);
+
+    $filePath = verifyImage($data['url_foto_instrutor'], $uploadDir);
+    $result;
+    try {
+        $stmt = $conn->prepare("SELECT * FROM instrutores WHERE cpf_instrutor = :cpf");
+        $stmt->bindParam(":cpf", $data['cpf_instrutor']);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        unlink($data['url_foto_instrutor']['tmp_name']);
+        echo json_encode(['error'=> $e->getMessage()]);
+        exit;
+    }
+    if (file_exists($result['url_foto_instrutor'])) unlink($result['url_foto_instrutor']);
+    if (file_put_contents($filePath, $data['url_foto_instrutor']['image']) === false) {
+        unlink($data['url_foto_instrutor']['tmp_name']);
+        echo json_encode(['error'=> 'Erro ao salvar dados binários ao arquivo final: ' . error_get_last()['message']]);
+        exit;
+    }
+
+    try {
+        $stmt = $conn->prepare("UPDATE instrutores 
+            SET cep_instrutor = :cep, data_nascimento_instrutor = :n_date, email_instrutor = :email, nome_instrutor = :nome, telefone_instrutor = :telefone, url_foto_instrutor = :f_url
+            WHERE cpf_instrutor = :cpf");
+        $stmt->bindParam(":cep", $data['cep_instrutor'], PDO::PARAM_STR);
+        $stmt->bindParam(":n_date", $data['data_nascimento_instrutor'], PDO::PARAM_STR);
+        $stmt->bindParam(":email", $data['email_instrutor'], PDO::PARAM_STR);
+        $stmt->bindParam(":nome", $data['nome_instrutor'], PDO::PARAM_STR);
+        $stmt->bindParam(":telefone", $data['telefone_instrutor'], PDO::PARAM_STR);
+        $stmt->bindParam(":f_url", $filePath, PDO::PARAM_STR);
+        $stmt->bindParam(":cpf", $data['cpf_instrutor'], PDO::PARAM_STR);
+        $stmt->execute();
+
+        unlink($data['url_foto_instrutor']['tmp_name']);
+        echo json_encode(['success' => "Instrutor atualizado com sucesso!"]);
+    } catch (PDOException $e) {
+        unlink($data['url_foto_instrutor']['tmp_name']);
+        echo json_encode(["error"=> $e->getMessage()]);
+        exit;
+    }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === "DELETE") {
+    parse_str(file_get_contents("php://input"), $data);
+
+    verifyCPF($data['cpf_instrutor'] ?? null);
+    try {
+        $stmt = $conn->prepare('SELECT * FROM instrutores WHERE cpf_instrutor = :cpf');
+        $stmt->bindParam(":cpf", $data['cpf_instrutor']);
+        $stmt->execute();
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC)[0];
+        if (count($data) <= 0) {
+            echo json_encode(['error', "Instrutor não existente"]);
+            exit;
+        }
+    } catch (PDOException $e) {
+        echo json_encode(["error", $e->getMessage()]);
+        exit;
+    }
+
+    try {
+        $stmt = $conn->prepare("DELETE FROM instrutores WHERE id_instrutor = :id");
+        $stmt->bindParam(":id", $data['id_instrutor']);
+        $stmt->execute();
+
+        if (file_exists($data['url_foto_instrutor'])) unlink($data['url_foto_instrutor']);
+
+        echo json_encode(['success','Instrutor excluído com sucesso']);
+    } catch (PDOException $e) {
+        echo json_encode(['error', $e->getMessage()]);
+    }
+}

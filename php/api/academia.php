@@ -1,6 +1,7 @@
 <?php
 
 require "../dbcon.php";
+require "../utility.php";
 
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (empty($_GET[''])) {
@@ -73,7 +74,7 @@ function verifyCNPJ($cnpj) {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents('php://input'), true);
-    
+
     ##CEP VERIFICATION SECTION
     verifyCEP($data['cep_academia'] ?? null);
     try {
@@ -106,7 +107,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         json_encode(['error' => $e->getMessage()]);
         exit;
     }
-
     ##NOME VERIFICATION SECTION
     verifyName($data['nome_academia'] ?? null);
 

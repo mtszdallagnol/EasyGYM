@@ -101,3 +101,69 @@ function verifySex($sex) {
         exit;
     }  
 }
+
+function verifyImage($image, $dir): string {
+    if (!$image || empty($image['name'])) {
+        echo json_encode(['error'=> 'Selecione uma imagem']);
+        exit;
+    }
+
+    $file = new finfo(FILEINFO_MIME_TYPE);
+    $mime = $file->file($image['tmp_name']);
+    
+    if ($mime === false) {
+        json_encode(['error' => "Erro ao detectar tipo MIME do arquivo: " . error_get_last()['message']]);
+        exit;
+    }
+
+    $allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+    
+    if (!in_array($mime, $allowed)) {
+        echo json_encode(['error'=> 'Formato de arquivo inválido. [JPEG, JPG, PNG, GIF]']);
+        exit;
+    }
+
+    $uploadMaxSize = 2;
+    if ($image['size'] > $uploadMaxSize ** 1024) {
+        echo json_encode(['error'=> 'Imagem não pode ser maior que '.$uploadMaxSize."MB"]);
+        exit;
+    }
+
+    $allowed_characters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    $curr_attempt = 0;
+    while ($curr_attempt < 10) {
+        $temp = "";
+        for ($i = 0; $i < 16; $i++) {
+            $temp .= $allowed_characters[random_int(0, strlen($allowed_characters) -1)];
+        }
+        $temp = $dir . $temp . "." . substr($mime, strpos($mime, '/') + 1);
+        if (!file_exists($temp)) {
+            finfo_close($file);
+            return $temp;
+        }
+        $curr_attempt++;
+    }
+
+    finfo_close($file);
+    echo json_encode(["error"=> "Não foi possível gerar o arquivo. Por favor, tente novamente"]);
+    exit;
+}
+
+function formDataPutRead($input, $context): array {
+    preg_match_all('/name="([^"]+)"\s*([^\n]+)/', $input, $matches);
+    $data = [];
+    foreach ($matches[1] as $index => $name) $data[$name] = trim($matches[2][$index]);
+    $data[$context] = [];
+    preg_match('/filename="([^"]*)"/', $input, $temp_filename);
+    $data[$context]['name'] = $temp_filename[1];
+    preg_match('/Content-Type:\s*image\/[a-zA-Z]+\s*(.*)\s*----------------------------\d+/s', $input, $temp_binaryImage);
+    $data[$context]['image'] = $temp_binaryImage[1];
+    $data[$context]['tmp_name'] = tempnam(sys_get_temp_dir(), 'img');
+    if (file_put_contents($data[$context]['tmp_name'], $data[$context]['image']) === false) {
+        unlink($data[$context]['tmp_name']);
+        echo json_encode(['error' => 'Erro ao transcrever dados binários à arquivo temporário: ' . error_get_last()['message']]);
+        exit;
+    }
+    $data[$context]['size'] = filesize($data[$context]['tmp_name']);
+    return $data;
+}
