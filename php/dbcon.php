@@ -1,10 +1,12 @@
 <?php
  
-$host = "127.0.0.1";
-$db = "easygym";
+$env = parse_ini_file(__DIR__ . DIRECTORY_SEPARATOR . "env.ini", true);
+
+$host = $env['database']['hostname'];
+$db = $env['database']['database'];
 $port = 3306;
-$user = "root";
-$psw = "root@123";
+$user = $env['database']['username'];
+$psw = $env['database']['password'];
 
 try {
     $conn = new PDO("mysql:host=$host;port=$port;dbname=$db;charset=utf8", $user, $psw);

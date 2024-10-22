@@ -79,11 +79,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $stmt->execute();
         $result = $stmt->fetchAll();
         if (count($result) > 0) {
-            echo json_encode(['error' => 'CEP já existente']);
+            echo json_encode(['error', 'CEP já existente']);
             exit;
         }
     } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['error', $e->getMessage()]);
         exit;
     }
 
@@ -94,11 +94,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $stmt->execute();
         $result = $stmt->fetchAll();
         if (count($result) > 0) {
-            echo json_encode(['error' => 'CPF já existente']);
+            echo json_encode(['error', 'CPF já existente']);
             exit;
         }
     } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['error', $e->getMessage()]);
         exit;   
     }
 
@@ -111,11 +111,11 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $stmt->execute();
         $result = $stmt->fetchAll();
         if (count($result) > 0) {
-            echo json_encode(['error' => 'Email já existente']);
+            echo json_encode(['error', 'Email já existente']);
             exit;
         }
     } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['error', $e->getMessage()]);
         exit;
     }
 
@@ -124,7 +124,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     verifyTelefone($_POST['telefone_aluno'] ?? null);
 
     if (!isset($_POST['id_academia'])) {
-        echo json_encode(['error' => "Academia inválida"]);
+        echo json_encode(['error', "Academia inválida"]);
         exit;
     }
     try {
@@ -133,17 +133,17 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $stmt->execute();
         $result = $stmt->fetchAll();
         if (count($result) <= 0) {
-            echo json_encode(['error' => 'Academia não existente']);
+            echo json_encode(['error', 'Academia não existente']);
             exit;
         }
     } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['error', $e->getMessage()]);
         exit;
     }
 
     $uploadFile = verifyImage($_FILES['url_foto_aluno'] ?? null, $uploadDir);
     if (!move_uploaded_file($_FILES['url_foto_aluno']['tmp_name'], $uploadFile)) {
-        echo json_encode(['error' => "Falha ao mover arquivo enviado: " . error_get_last()["message"]]);
+        echo json_encode(['error', "Falha ao mover arquivo enviado: " . error_get_last()["message"]]);
         exit;
     }
 
@@ -169,9 +169,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         
         $stmt->execute();
 
-        echo json_encode(['success' => 'Cadastro realizado com sucesso']);
+        echo json_encode(['success', 'Cadastro realizado com sucesso']);
     } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['error', $e->getMessage()]);
     }
 }
 
@@ -185,11 +185,11 @@ if ($_SERVER['REQUEST_METHOD'] === "PUT") {
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (count($result) > 1 || (count($result) === 1 && $result[0]['cep_aluno'] !== $data['cep_aluno'])) {
-            echo json_encode(['error' => 'CEP já existente']);
+            echo json_encode(['error', 'CEP já existente']);
             exit;
         }
     } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['error', $e->getMessage()]);
         exit;
     }
 
@@ -203,18 +203,18 @@ if ($_SERVER['REQUEST_METHOD'] === "PUT") {
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         if (count($result) > 1 || (count($result) === 1 && $result[0]['email_aluno'] !== $data['email_aluno'])) {
-            echo json_encode(['error' => 'Email já existente']);
+            echo json_encode(['error', 'Email já existente']);
             exit;
         }
     } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['error', $e->getMessage()]);
         exit;
     }
     verifyName($data['nome_aluno'] ?? null);
     verifyTelefone($data['telefone_aluno'] ?? null);
 
     if (!isset($data['id_academia'])) {
-        echo json_encode(['error' => 'Academia não existente']);
+        echo json_encode(['error', 'Academia não existente']);
         exit;
     }
     try {
@@ -223,11 +223,11 @@ if ($_SERVER['REQUEST_METHOD'] === "PUT") {
         $stmt->execute();
         $result = $stmt->fetchAll();
         if (count($result) <= 0) {
-            echo json_encode(['error' => 'Academia não existente']);
+            echo json_encode(['error', 'Academia não existente']);
             exit;
         }
     } catch (PDOException $e) {
-        echo json_encode(['error' => $e->getMessage()]);
+        echo json_encode(['error', $e->getMessage()]);
         exit;
     }
 
@@ -246,7 +246,7 @@ if ($_SERVER['REQUEST_METHOD'] === "PUT") {
     if (file_exists($result['url_foto_aluno'])) unlink($result['url_foto_aluno']);
     if (file_put_contents($filePath, $data['url_foto_aluno']['image']) === false) {
         unlink($data['url_foto_aluno']['tmp_name']);
-        echo json_encode(['error'=> 'Erro ao salvar dados binários ao arquivo final: ' . error_get_last()['message']]);
+        echo json_encode(['error', 'Erro ao salvar dados binários ao arquivo final: ' . error_get_last()['message']]);
         exit;
     }
 

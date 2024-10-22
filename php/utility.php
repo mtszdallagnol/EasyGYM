@@ -46,13 +46,13 @@ function verifyCPF($cpf) {
 
 function verifyAge($birth) {
     if (empty($birth)) {
-        echo json_encode(['error' => 'Data de nascimento inválida']);
+        echo json_encode(['error', 'Data de nascimento inválida']);
         exit;
     }
 
     $birthOBJ = DateTime::createFromFormat('Y-m-d', $birth);
     if (!$birthOBJ || $birthOBJ->format('Y-m-d') !== $birth) {
-        echo json_encode(['error' => 'Formato de data de nascimento inválido']);
+        echo json_encode(['error', 'Formato de data de nascimento inválido']);
         exit;
     }
 
@@ -60,51 +60,51 @@ function verifyAge($birth) {
     $age = $currentDate->diff($birthOBJ)->y;
 
     if ($birthOBJ > $currentDate) {
-        echo json_encode(['error' => 'Data de nascimento está no futuro']);
+        echo json_encode(['error', 'Data de nascimento está no futuro']);
         exit;
     }
 
     if ($age > 120) {
-        echo json_encode(['error' => 'Idade ultrapassa o limite de 120 anos']);
+        echo json_encode(['error', 'Idade ultrapassa o limite de 120 anos']);
         exit;
     }
 }
 
 function verifyEmail($email) {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        echo json_encode(['error' => 'Email inválido']);
+        echo json_encode(['error', 'Email inválido']);
         exit;
     }
 }
 
 function verifyName($name) {
     if (empty($name)) {
-        echo json_encode(['error'=> 'Nome inválido']);
+        echo json_encode(['error', 'Nome inválido']);
         exit;
     }
     if (strlen($name) > 50) {
-        echo json_encode(['error'=> 'Nome maior do que 50 caracteres']);
+        echo json_encode(['error', 'Nome maior do que 50 caracteres']);
         exit;
     }
 }
 
 function verifySex($sex) {
     if (empty($sex)) {
-        echo json_encode(['error' => 'Sexo inválido']);
+        echo json_encode(['error', 'Sexo inválido']);
         exit;
     }
 
     $sex = strtoupper($sex);
 
     if ($sex !== "M" && $sex !== "F") {
-        echo json_encode(['error' => 'Sexo inválido']);
+        echo json_encode(['error', 'Sexo inválido']);
         exit;
     }  
 }
 
 function verifyImage($image, $dir): string {
     if (!$image || empty($image['name'])) {
-        echo json_encode(['error'=> 'Selecione uma imagem']);
+        echo json_encode(['error', 'Selecione uma imagem']);
         exit;
     }
 
@@ -112,20 +112,20 @@ function verifyImage($image, $dir): string {
     $mime = $file->file($image['tmp_name']);
     
     if ($mime === false) {
-        json_encode(['error' => "Erro ao detectar tipo MIME do arquivo: " . error_get_last()['message']]);
+        json_encode(['error', "Erro ao detectar tipo MIME do arquivo: " . error_get_last()['message']]);
         exit;
     }
 
     $allowed = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
     
     if (!in_array($mime, $allowed)) {
-        echo json_encode(['error'=> 'Formato de arquivo inválido. [JPEG, JPG, PNG, GIF]']);
+        echo json_encode(['error', 'Formato de arquivo inválido. [JPEG, JPG, PNG, GIF]']);
         exit;
     }
 
     $uploadMaxSize = 2;
     if ($image['size'] > $uploadMaxSize ** 1024) {
-        echo json_encode(['error'=> 'Imagem não pode ser maior que '.$uploadMaxSize."MB"]);
+        echo json_encode(['error', 'Imagem não pode ser maior que '.$uploadMaxSize."MB"]);
         exit;
     }
 
@@ -145,7 +145,7 @@ function verifyImage($image, $dir): string {
     }
 
     finfo_close($file);
-    echo json_encode(["error"=> "Não foi possível gerar o arquivo. Por favor, tente novamente"]);
+    echo json_encode(["error", "Não foi possível gerar o arquivo. Por favor, tente novamente"]);
     exit;
 }
 
@@ -161,7 +161,7 @@ function formDataPutRead($input, $context): array {
     $data[$context]['tmp_name'] = tempnam(sys_get_temp_dir(), 'img');
     if (file_put_contents($data[$context]['tmp_name'], $data[$context]['image']) === false) {
         unlink($data[$context]['tmp_name']);
-        echo json_encode(['error' => 'Erro ao transcrever dados binários à arquivo temporário: ' . error_get_last()['message']]);
+        echo json_encode(['error', 'Erro ao transcrever dados binários à arquivo temporário: ' . error_get_last()['message']]);
         exit;
     }
     $data[$context]['size'] = filesize($data[$context]['tmp_name']);
