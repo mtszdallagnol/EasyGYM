@@ -7,6 +7,15 @@ require_once __DIR__ . '/../models/Academia.php'; // Adjust the path as necessar
 use Models\Academia;
 use Models\AcademiaDTO;
 
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
+    $result;
+    if (empty($_GET)) {
+        $result = Academia::getAll();
+
+        echo json_encode(["success", $result]);
+    }
+}
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
 

@@ -37,39 +37,63 @@ class Academia implements ControllerInterace{
 
     public static function getAll() : array {
         $conn = Database::getInstance();
+
+        // Prepara e executa instrução SQL
         $result = $conn->query("SELECT * FROM academias");
+
+        // Busca os resultados e os coloca em uma array de objetos AcademiaDTO
         $response = [];
         while ($row = $result->fetch_assoc()) {
             $response[] = new AcademiaDTO($row);
         }
+        
         return $response;
     }
 
     public static function getByParams(array $params) : array {
         $conn = Database::getInstance();
+
+        // Organiza o array em ordem alfabética
         ksort($params);
 
+        // Inicializa e constroi a QUERY SQL dinamicamente baseado nos parâmetros providenciados
         $query = "SELECT * FROM academias WHERE ";
+
         foreach ($params as $key => &$value) {
-            if (!property_exists('Models\\AcademiaDTO', str_replace(":", "", $key))) die(json_encode(["error", "Parâmetro: " . str_replace(":", "", $key) . " inválido"]));
+            if (!property_exists('Models\\AcademiaDTO', str_replace(":", "", $key))) {
+                die(json_encode(["error", "Parâmetro: " . str_replace(":", "", $key) . " inválido"]));
+            }
+
             $query .= str_replace(":", "", $key) . " LIKE ? ;";
             $value .= "%";
         }
+
         $query = str_replace(";", " AND ", $query);
         $query = substr($query, 0, -5);
         
+        //Prepare a instrução SQL
         $stmt = $conn->prepare($query);
-        if (!$stmt) die(["error", "Falha na preparação: " . $conn->error]);
+        if (!$stmt) {
+            die(["error", "Falha na preparação: " . $conn->error]);
+        }
 
+        //Extrai o tipo e os valores do array dos parâmetros
+        //Binda a instrução SQL
         $types = str_repeat("s", count($params));
         $temp = array_values($params);
         $stmt->bind_param($types, ...$temp);
-        if(!$stmt->execute()) die(["error", "Erro na execução: " . $stmt->error]);
 
+        //Executa a instrução SQL
+        if(!$stmt->execute()) {
+            die(["error", "Erro na execução: " . $stmt->error]);
+        }
+
+        //Busca os resultados e os coloca em uma array de objetos AcademiaDTO
         $response = [];
         while ($row = $stmt->get_result()->fetch_assoc()) {
             $response[] = new AcademiaDTO($row);
         }
+
         return $response;
     }
 
@@ -82,7 +106,7 @@ class Academia implements ControllerInterace{
         }
         
         // Prepara a instrução SQL
-        $stmt = $conn->prepare("INSERT INTO academias (cep_academia, nome_academia, telefone_academia, cnpj_academia)
+        $stmt = $conn->prepare("INSERT INTO academias (cep_academia, cnpj_academia, nome_academia, telefone_academia)
                 VALUES (?, ?, ?, ?)");
 
         if (!$stmt) {

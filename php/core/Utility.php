@@ -189,7 +189,7 @@ class Utility {
 
     public static function verifyCNPJ($cnpj) {
         if (strlen($cnpj) != 14)
-		    die(['error', "CNPJ inválido"]);
+		    die(json_encode(['error', "CNPJ inválido"]));
 
         // Verifica se todos os digitos são iguais
         if (preg_match('/(\d)\1{13}/', $cnpj))
