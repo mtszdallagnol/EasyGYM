@@ -1,6 +1,6 @@
 PHP
-- Change INI extension DIR;
-- Enable Fileinfo, PDO myslq, OpenSSL;
+- Change INI;
+- Enable Fileinfo, MYSQLI, OpenSSL;
 
 APACHE
 - Change Server Root;
