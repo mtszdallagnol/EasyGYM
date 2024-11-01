@@ -10,7 +10,7 @@ class Utility {
         $cep_verification = $cep_verification == false ? $cep_verification : json_decode($cep_verification, true);
     
         if ($cep_verification == false || (isset($cep_verification['erro']) && $cep_verification['erro'] == true)) {
-            die(['error', "CEP inválido"]);
+            die(json_encode(['error', "CEP inválido"]));
         }
     }
 
@@ -218,16 +218,6 @@ class Utility {
 
         if($cnpj[13] != ($resto < 2 ? 0 : 11 - $resto)) {
             die(['error', "CNPJ inválido"]);
-        }
-    }
-
-    public static function verifyID($id) {
-        if (empty($id)) {
-            return;
-        }
-
-        if (!is_numeric($id) || $id < 1) {
-            die(["error", "ID inválido"]);
         }
     }
 }

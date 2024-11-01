@@ -4,22 +4,26 @@ namespace Core;
 
 require_once __DIR__ . "/../config/config.php";
 
-use mysqli;
+use PDO;
+use PDOException;
 
 class Database {
     private static $instance = null;
     private $conn = null;
 
     private function __construct() {
-        $this->conn = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        $dsn = "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME;
 
-        if ($this->conn->connect_error) {
-            die(["error", "Conexão com banco falhou: " . $this->conn->connect_error]);
+        $options = [
+            PDO::ATTR_PERSISTENT => true,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+        ];
+
+        try {
+            $this->conn = new PDO($dsn, DB_USER, DB_PASS, $options);
+        } catch (PDOException $e) {
+            die(json_encode(["error", $e->getMessage()]));
         }
-    }
-
-    public function __destruct() {
-        $this->conn->close();
     }
 
     public static function getInstance() {

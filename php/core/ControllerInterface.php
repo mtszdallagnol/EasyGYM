@@ -4,8 +4,8 @@ namespace Core;
 
 interface ControllerInterace {
     public static function getAll();
-    public static function getByParams(array $params);
+    public static function getByParams($params);
     public static function post($data);
     public static function put($data);
-    public static function delete($id);
+    public static function delete(int $id);
 }

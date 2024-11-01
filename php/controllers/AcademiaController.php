@@ -8,20 +8,52 @@ use Models\Academia;
 use Models\AcademiaDTO;
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
-    $result;
     if (empty($_GET)) {
-        $result = Academia::getAll();
-
-        echo json_encode(["success", $result]);
+        echo json_encode(["success", Academia::getAll()]);
+    } else  {
+        echo json_encode(["success", Academia::getByParams($_GET)]);
     }
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
+    $curr = new AcademiaDTO($data);
 
-    $result = Academia::post(new AcademiaDTO($data));
-
-    if ($result > 0) {
-        echo json_encode(["success", "Academia registrada com sucesso"]);
+    if (Academia::post($curr) < 1) {
+        die(json_encode(["info", "Nenhum cadastro realizado"]));
     }
+
+    echo json_encode(["success", "Cadastro realizado com sucesso"]);
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "PUT") {
+    $data = json_decode(file_get_contents("php://input"), true);
+
+    if(count(Academia::getByParams(["id_academia" => (int)$data["id_academia"] ?? -1])) < 1) {
+        die(json_encode(["error", "Academia não existente"]));
+    }
+    
+    $curr = new AcademiaDTO($data);
+
+    if (Academia::put($curr) < 1) {
+        die(json_encode(["info", "Nenhuma edição realizada"]));
+    }
+
+    echo json_encode(["success", "Edição realizada com sucesso"]);
+}
+
+if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
+    $data = json_decode(file_get_contents("php://input"), true);
+    $curr = Academia::getByParams(["id_academia" => (int)$data["id_academia"] ?? -1]);
+
+    if (count($curr) < 1) {
+        die(json_encode(['error', "Academia não existente"]));
+    }
+
+    $curr = $curr[0];
+    if (Academia::delete($curr->id_academia) < 1) {
+        die(json_encode(["info", "Nenhuma remoção realizada"]));
+    }
+
+    echo json_encode(["success","Remoção realizada com sucesso"]);
 }
