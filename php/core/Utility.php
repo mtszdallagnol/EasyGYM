@@ -1,6 +1,7 @@
 <?php
 
 namespace Core;
+use Models\Academia;
 use DateTime;
 use finfo;
 
@@ -218,6 +219,18 @@ class Utility {
 
         if($cnpj[13] != ($resto < 2 ? 0 : 11 - $resto)) {
             die(['error', "CNPJ inválido"]);
+        }
+    }
+
+    public static function verifyUint(int $int) {
+        if ($int < 0) {
+            die(json_encode(["error" => "Nível de senioridade inválido"]));
+        }
+    }
+
+    public static function verifyAcademia(int $id) {
+        if (count(Academia::getByParams(["id_academia" => $id ?? -1])) < 1) {
+            die(json_encode(["error", "Academia não existete"]));
         }
     }
 }

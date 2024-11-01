@@ -9,7 +9,7 @@ use Models\AcademiaDTO;
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
     if (empty($_GET)) {
-        echo json_encode(["success", Academia::getAll()]);
+        echo json_encode(["success", Academia::getAll(-1)]);
     } else  {
         echo json_encode(["success", Academia::getByParams($_GET)]);
     }
@@ -51,7 +51,7 @@ if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
     }
 
     $curr = $curr[0];
-    if (Academia::delete($curr->id_academia) < 1) {
+    if (Academia::delete($curr->id_academia, -1) < 1) {
         die(json_encode(["info", "Nenhuma remoção realizada"]));
     }
 

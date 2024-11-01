@@ -34,7 +34,7 @@ class AcademiaDTO {
 }
 
 class Academia implements ControllerInterace{
-    public static function getAll(): array {
+    public static function getAll(int $id_academia): array {
         $conn = Database::getInstance();
 
         try {
@@ -119,9 +119,8 @@ class Academia implements ControllerInterace{
         // Compara se já existe registro diferente com mesmo CEP
         $curr = Academia::getByParams(["id_academia" => $data->id_academia])[0];
         $repeat = Academia::getByParams(["cep_academia" => $data->cep_academia]);
-        if (count($repeat) > 1 
-            || (count($repeat) === 1 && $repeat[0]->cep_academia !== $curr->cep_academia)) {
-                die(json_encode(["error", "CEP já existente"]));
+        if (count($repeat) > 0 && $curr->cep_academia !== $repeat[0]->cep_academia) {
+            die(json_encode(["error", "CEP já existente"]));
         }
 
         // Monta dinamicamente a array de parâmetros baseado nos argumentos dados
@@ -144,7 +143,7 @@ class Academia implements ControllerInterace{
         }
     }
 
-    public static function delete (int $id): int {
+    public static function delete (int $id, int $id_academia): int {
         $conn = Database::getInstance();
 
         try {
