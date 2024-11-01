@@ -1,6 +1,6 @@
 PHP
 - Change INI;
-- Enable Fileinfo, MYSQLI, OpenSSL;
+- Enable Fileinfo, PDO, OpenSSL;
 
 APACHE
 - Change Server Root;
