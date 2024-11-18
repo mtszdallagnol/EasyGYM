@@ -2,24 +2,24 @@
 
 namespace Controllers;
 
-require_once __DIR__ . '/../models/Academia.php'; // Adjust the path as necessary// If you use this class as well
+require_once __DIR__ . '/../models/Treino.php'; // Adjust the path as necessary// If you use this class as well
 
-use Models\Academia;
-use Models\AcademiaDTO;
+use Models\Treino;
+use Models\TreinoDTO;
 
 if ($_SERVER["REQUEST_METHOD"] === "GET") {
     if (empty($_GET)) {
-        echo json_encode(["success", Academia::getAll(-1)]);
+        echo json_encode(["success", Treino::getAll(-1)]);
     } else  {
-        echo json_encode(["success", Academia::getByParams($_GET)]);
+        echo json_encode(["success", Treino::getByParams($_GET)]);
     }
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $data = json_decode(file_get_contents("php://input"), true);
-    $curr = new AcademiaDTO($data);
+    $curr = new TreinoDTO($data);
 
-    if (Academia::post($curr) < 1) {
+    if (Treino::post($curr) < 1) {
         die(json_encode(["info", "Nenhum cadastro realizado"]));
     }
 
@@ -29,13 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 if ($_SERVER["REQUEST_METHOD"] === "PUT") {
     $data = json_decode(file_get_contents("php://input"), true);
 
-    if(count(Academia::getByParams(["id_academia" => (int)$data["id_academia"] ?? -1])) < 1) {
-        die(json_encode(["error", "Academia não existente"]));
+    if(count(Treino::getByParams(["id_academia" => (int)$data["id_academia"] ?? -1])) < 1) {
+        die(json_encode(["error", "Treino não existente"]));
     }
     
-    $curr = new AcademiaDTO($data);
+    $curr = new TreinoDTO($data);
 
-    if (Academia::put($curr) < 1) {
+    if (Treino::put($curr) < 1) {
         die(json_encode(["info", "Nenhuma edição realizada"]));
     }
 
@@ -44,14 +44,14 @@ if ($_SERVER["REQUEST_METHOD"] === "PUT") {
 
 if ($_SERVER["REQUEST_METHOD"] === "DELETE") {
     $data = json_decode(file_get_contents("php://input"), true);
-    $curr = Academia::getByParams(["id_academia" => $data["id_academia"] ?? -1]);
+    $curr = Treino::getByParams(["id_academia" => $data["id_academia"] ?? -1, "id_treino" => $data["id_treino"] ?? null]);
 
     if (count($curr) < 1) {
-        die(json_encode(['error', "Academia não existente"]));
+        die(json_encode(['error', "Treino não existente"]));
     }
 
     $curr = $curr[0];
-    if (Academia::delete($curr->id_academia, -1) < 1) {
+    if (Treino::delete($curr->id_treino, $curr->id_academia) < 1) {
         die(json_encode(["info", "Nenhuma remoção realizada"]));
     }
 

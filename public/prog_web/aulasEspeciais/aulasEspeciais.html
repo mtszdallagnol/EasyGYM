@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGym - Gerenciar Aulas Especiais</title>
+    <link rel="stylesheet" href="aulasEspeciais.css">
+    <link rel="stylesheet" href="../main.css">
+
+    <!-- Link para o arquivo JavaScript externo -->
+    <script src="aulasEspeciais.js"></script>
+</head>
+<body>
+<div class="container">
+    <!-- Menu lateral com barra de navegação -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h1>EASYGYM</h1>
+            <p>FITNESS SOFTWARE</p>
+        </div>
+        <nav class="menu">
+            <a href="../gerenciamento/gerenciamento.html">Menu</a>
+            <a href="../aluno/aluno.html">Alunos</a>
+            <a href="../aulasEspeciais/aulasEspeciais.html" class="active">Aulas Esp.</a>
+            <a href="../cargos/cargos.html">Cargos</a>
+            <a href="../instrutor/instrutor.html">Instrutores</a>
+            <a href="../maquina/maquina.html">Máquinas</a>
+            <a href="../treinos/treinos.html">Treinos</a>
+        </nav>
+        <div class="logout">
+            <a href="#">Sair</a>
+        </div>
+    </aside>
+
+    <!-- Ícone de menu hambúrguer para dispositivos móveis -->
+    <div class="hamburger" onclick="toggleSidebar()">
+        ☰
+    </div>
+
+    <!-- Botões para ações -->
+    <div class="button-group">
+        <button class="btn btn-add" id="adicionar-aula-especial">Adicionar Aula Especial</button>
+    </div>
+
+    <!-- Tabela de Aulas Especiais -->
+    <table id="tabela-aulas">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome da Atividade</th>
+            <th>Instrutor</th>
+            <th>Duração</th>
+            <th>Dia da Semana</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- As linhas da tabela serão inseridas via JavaScript -->
+        </tbody>
+    </table>
+
+    <!-- Modal de Adicionar/Editar Aula Especial -->
+    <div id="modal-container" class="modal-container">
+        <div class="modal-content">
+            <h2 id="modal-titulo">Adicionar Aula Especial</h2>
+            <form id="form-aula">
+                <input type="hidden" id="id-aula" name="id"> <!-- Campo oculto para o ID da aula -->
+                
+                <label for="nome-atividade">Nome da Atividade:</label>
+                <input type="text" id="nome-atividade" name="activityName" required><br><br>
+
+                <label for="instrutor">Instrutor:</label>
+                <input type="text" id="instrutor" name="instructor" required><br><br>
+
+                <label for="duracao">Duração:</label>
+                <input type="text" id="duracao" name="duration" required><br><br>
+
+                <label for="dia-semana">Dia da Semana:</label>
+                <input type="text" id="dia-semana" name="dayOfWeek" required><br><br>
+
+                <button class="btn btn-edit" type="submit" id="submit-aula">Salvar</button>
+                <button class="btn btn-delete" type="button" id="fechar-modal">Fechar</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -12,16 +12,18 @@ use Core\Utility;
 use PDO;
 use PDOException;
 
-class CargoDTO {
-    public int $id_cargo = -1;
-    public string $nome_cargo;
-    public string $desc_cargo;
+class EquipamentoDTO {
+    public int $id_equipamento = -1;
+    public string $modelo_equipamento;
+    public string $marca_equipamento;
+    public string $nome_equipamento;
     public int $id_academia;
 
     public function __construct($data) {
-        Utility::verifyName($data["nome_cargo"] ?? null);
-        Utility::verifyDesc($data["desc_cargo"] ?? null);
-        Utility::verifyAcademia($data["id_academia"] ?? -1);
+        Utility::verifyName($data["modelo_equipamento"] ?? null);
+        Utility::verifyName($data["marca_equipamento"] ?? null);
+        Utility::verifyName($data["nome_equipamento"] ?? null);
+        Utility::verifyAcademia($data["id_academia"] ?? null);
 
         foreach($data as $key => $value) {
             if (property_exists($this, $key)) {
@@ -31,24 +33,20 @@ class CargoDTO {
     }
 }
 
-class Cargo implements ControllerInterace {
+class Equipamento implements ControllerInterace {
     private function __construct() {}
 
     public static function getAll(int $id_academia): array {
         $conn = Database::getInstance();
 
         try {
-            if ($id_academia !== -1) {
-                $stmt = $conn->prepare("SELECT * FROM cargos WHERE id_academia = :id_academia");
-                $stmt->bindParam(":id_academia", $id_academia);
-                $stmt->execute();
-            } else {
-                $stmt = $conn->query("SELECT * FROM cargos");
+            if ($id_academia === -1) {
+                $stmt = $conn->query("SELECT * FROM equipamentos");
             }
 
             $result = [];
             while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                array_push($result, new CargoDTO($row));
+                $result[] = new EquipamentoDTO($row);
             }
 
             return $result;
@@ -60,7 +58,7 @@ class Cargo implements ControllerInterace {
     public static function getByParams($params): array {
         $conn = Database::getInstance();
 
-        $query = "SELECT * FROM cargos WHERE ";
+        $query = "SELECT * FROM equipamentos WHERE ";
 
         $tempParam = [];
         foreach($params as $key => $value) {
@@ -76,7 +74,7 @@ class Cargo implements ControllerInterace {
 
             $result = [];
             while($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                array_push($result, new CargoDTO($row));
+                $result[] = new EquipamentoDTO($row);
             }
 
             return $result;
@@ -88,20 +86,16 @@ class Cargo implements ControllerInterace {
     public static function post($data): int {
         $conn = Database::getInstance();
 
-        if (count(Cargo::getByParams(["id_academia" => $data->id_academia, "nome_cargo" => $data->nome_cargo])) > 0) {
-            die(json_encode(["error","Nome já existente"]));
-        }
-
-        unset($data->id_cargo);
+        unset($data->id_equipamento);
 
         $params = [];
         foreach($data as $key => $value) {
-            $params[":" . $key] = $value;
+            $params[":". $key] = $value;
         }
 
         try {
-            $stmt = $conn->prepare("INSERT INTO cargos (nome_cargo, desc_cargo, id_academia)
-                    VALUES (:nome_cargo, :desc_cargo, :id_academia)");
+            $stmt = $conn->prepare("INSERT INTO equipamentos (modelo_equipamento, marca_equipamento, nome_equipamento, id_academia)
+                    VALUES (:modelo_equipamento, :marca_equipamento, :nome_equipamento, :id_academia)");
             $stmt->execute($params);
 
             return $stmt->rowCount();
@@ -110,24 +104,18 @@ class Cargo implements ControllerInterace {
         }
     }
 
-    public static function put($data) : int {
+    public static function put($data): int {
         $conn = Database::getInstance();
-
-        $curr = Cargo::getByParams(["id_academia" => $data->id_academia, "id_cargo" => $data->id_cargo])[0];
-        $repeat = Cargo::getByParams(["id_academia" => $data->id_academia, "nome_cargo" => $data->nome_cargo]);
-        if (count($repeat) > 0 && $curr->nome_cargo !== $repeat[0]->nome_cargo) {
-            die(json_encode(["error", "Nome de cargo já existente"]));
-        }
 
         $params = [];
-        foreach ($data as $key => $value) {
-            $params[":" . $key] = $value;
+        foreach($data as $key => $value) {
+            $params[":". $key] = $value;
         }
 
         try {
-            $stmt = $conn->prepare("UPDATE cargos
-                    SET nome_cargo = :nome_cargo, desc_cargo = :desc_cargo
-                    WHERE id_academia = :id_academia AND id_cargo = :id_cargo");
+            $stmt = $conn->prepare("UPDATE equipamentos
+                    SET modelo_equipamento = :modelo_equipamento, marca_equipamento = :marca_equipamento, nome_equipamento = :nome_equipamento
+                    WHERE id_academia = :id_academia AND id_equipamento = :id_equipamento");
             $stmt->execute($params);
 
             return $stmt->rowCount();
@@ -136,13 +124,13 @@ class Cargo implements ControllerInterace {
         }
     }
 
-    public static function delete($id, $id_academia): int  {
+    public static function delete($id, $id_academia): int {
         $conn = Database::getInstance();
 
         try {
-            $stmt = $conn->prepare("DELETE FROM cargos
-                    WHERE id_academia = :id_academia AND id_cargo = :id_cargo");
-            $stmt->execute([":id_academia" => $id_academia, "id_cargo" => $id]);
+            $stmt = $conn->prepare("DELETE FROM equipamentos
+                    WHERE id_academia = :id_academia AND id_equipamento = :id_equipamento");
+            $stmt->execute([":id_academia" => $id_academia, ":id_equipamento" => $id]);
 
             return $stmt->rowCount();
         } catch (PDOException $e) {

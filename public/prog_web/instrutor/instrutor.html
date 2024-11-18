@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGym - Gerenciar Instrutor</title>
+    <link rel="stylesheet" href="intrutor.css">
+    <link rel="stylesheet" href="../main.css">
+
+    <!-- Link para o arquivo JavaScript externo -->
+    <script src="instrutor.js"></script>
+</head>
+<body>
+<div class="container">
+    <!-- Menu lateral com barra de navegação -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h1>EASYGYM</h1>
+            <p>FITNESS SOFTWARE</p>
+        </div>
+        <nav class="menu">
+            <a href="../gerenciamento/gerenciamento.html">Menu</a>
+            <a href="../aluno/aluno.html">Alunos</a>
+            <a href="../aulasEspeciais/aulasEspeciais.html">Aulas Esp.</a>
+            <a href="../cargos/cargos.html">Cargos</a>
+            <a href="../instrutor/instrutor.html" class="active">Instrutores</a>
+            <a href="../maquina/maquina.html">Máquinas</a>
+            <a href="../treinos/treinos.html">Treinos</a>
+        </nav>
+        <div class="logout">
+            <a href="#">Sair</a>
+        </div>
+    </aside>
+
+    <!-- Ícone de menu hambúrguer para dispositivos móveis -->
+    <div class="hamburger" onclick="toggleSidebar()">
+        ☰
+    </div>
+
+    <!-- Botões para ações -->
+    <div class="button-group">
+        <button class="btn btn-add" id="adicionar-atividade">Adicionar Instrutor</button>
+    </div>
+
+    <!-- Tabela de Atividades -->
+    <table id="tabela-atividades">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- As linhas da tabela serão inseridas via JavaScript -->
+        </tbody>
+    </table>
+
+    <!-- Modal de Adicionar/Editar -->
+    <div id="modal-container" class="modal-container">
+        <div class="modal-content">
+            <h2 id="modal-titulo">Adicionar Instrutor</h2>
+            <form id="form-atividade">
+                <input type="hidden" id="id-atividade" name="id"> <!-- Campo oculto para o ID da atividade -->
+                <label for="nome">Nome:</label>
+                <input type="text" id="nome" name="name" required><br><br>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required><br><br>
+
+                <label for="password">Senha:</label>
+                <input type="password" id="password" name="password" required><br><br>
+                <button class="btn btn-edit" type="button" onclick="togglePasswordVisibility('password', this)">Mostrar/Esconder</button><br><br>
+
+                <label for="confirmPassword">Confirmar Senha:</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required><br><br>
+                <button class="btn btn-edit" type="button" onclick="togglePasswordVisibility('confirmPassword', this)">Mostrar/Esconder</button><br><br>
+
+                <button class="btn btn-edit" onclick="validatePasswords()" type="submit" id="submit-atividade">Salvar</button>
+                <button class="btn btn-delete" type="button" id="fechar-modal">Fechar</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        function validatePasswords() {
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (password !== confirmPassword) {
+                alert('As senhas não coincidem. Por favor, verifique novamente.');
+                return false;
+            }
+            alert('Senhas coincidem! Formulário pode ser enviado.');
+            return true;
+        }
+        function togglePasswordVisibility(inputId, button) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                button.textContent = 'Esconder';
+            } else {
+                input.type = 'password';
+                button.textContent = 'Mostrar';
+            }
+        }
+    </script>
+
+</div>
+</body>
+</html>

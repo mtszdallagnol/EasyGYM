@@ -1,0 +1,168 @@
+/* Reseta margens e paddings */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    color: #ffffff;
+    background-color: #2d2d2d;
+}
+
+.container {
+    display: flex;
+    height: 100vh; /* Garante que o container tenha 100% da altura da viewport */
+}
+
+/* Estilo do menu lateral */
+.sidebar {
+    width: 250px;
+    background-color: #8b0000;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 20px;
+    transition: transform 0.3s ease;
+    height: 100vh; /* Sidebar ocupa 100% da altura da viewport */
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.sidebar.active {
+    transform: translateX(0);
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo h1 {
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.logo p {
+    font-size: 12px;
+    color: #bbbbbb;
+}
+
+.menu a {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px;
+    display: block;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    text-align: left;
+}
+
+.menu a.active, .menu a:hover {
+    background-color: #a30000;
+}
+
+.logout {
+    text-align: center;
+}
+
+.logout a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Estilo do conteúdo principal */
+.content {
+    flex-grow: 1;
+    padding: 20px;
+    margin-left: 250px; /* Compensa a largura da sidebar fixa */
+    background-image: url('background-texture.png');
+    background-size: cover;
+}
+
+.content h2 {
+    margin-bottom: 20px;
+}
+
+.classes {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.class-card {
+    background-color: #333333;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+}
+
+.class-card img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.class-info {
+    padding: 15px;
+}
+
+.class-info h3 {
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.class-info button {
+    background-color: #8b0000;
+    color: #ffffff;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.class-info button:hover {
+    background-color: #a30000;
+}
+
+/* Estilo do menu hambúrguer */
+.hamburger {
+    display: none;
+    font-size: 24px;
+    color: #ffffff;
+    background-color: #8b0000;
+    padding: 10px;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 10;
+    border-radius: 5px;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    /* Oculta a barra lateral e exibe o ícone de hambúrguer */
+    .sidebar {
+        transform: translateX(-100%);
+        height: 100%; /* Garante que a sidebar ocupe a altura completa em dispositivos móveis */
+        z-index: 5;
+    }
+
+    .sidebar.active {
+        transform: translateX(0);
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .content {
+        margin-left: 0;
+        padding-left: 20px;
+    }
+}

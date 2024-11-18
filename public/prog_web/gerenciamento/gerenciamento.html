@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGym</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js"></script>
+
+</head>
+<body>
+    <div class="container">
+        <!-- Menu lateral com barra de navegação -->
+        <aside class="sidebar" id="sidebar">
+            <div class="logo">
+                <h1>EASYGYM</h1>
+                <p>FITNESS SOFTWARE</p>
+            </div>
+            <nav class="menu">
+                <a href="../gerenciamento/gerenciamento.html" class="active">Menu</a>
+                <a href="../aluno/aluno.html">Alunos</a>
+                <a href="../aulasEspeciais/aulasEspeciais.html">Aulas Esp.</a>
+                <a href="../cargos/cargos.html">Cargos</a>
+                <a href="../instrutor/instrutor.html">Instrutores</a>
+                <a href="../maquina/maquina.html">Máquinas</a>
+                <a href="../treinos/treinos.html">Treinos</a>
+            </nav>
+            <div class="logout">
+                <a href="#">Sair</a>
+            </div>
+        </aside>
+
+        <!-- Ícone de menu hambúrguer para dispositivos móveis -->
+        <div class="hamburger" onclick="toggleSidebar()">
+            ☰
+        </div>
+
+        <!-- Conteúdo principal -->
+        <main class="content">
+            <h2>Gerenciamento</h2>
+            <div class="classes">
+                <div class="class-card">
+                    <img src="funcionários.png" alt="Funcionários">
+                    <div class="class-info">
+                        <h3>Funcionários</h3>
+                        <button onclick="changePage('public/prog_web/instrutor','instrutor.html')">Visualizar</button>
+                    </div>
+                </div>
+                <div class="class-card">
+                    <img src="alunos.png" alt="Alunos">
+                    <div class="class-info">
+                        <h3>Alunos</h3>
+                        <button onclick="changePage('public/prog_web/aluno','aluno.html')">Visualizar</button>
+                    </div>
+                </div>
+                <div class="class-card">
+                    <img src="maquina.png" alt="Máqinas">
+                    <div class="class-info">
+                        <h3>Máquinas</h3>
+                        <button onclick="changePage('public/prog_web/maquina','maquina.html')">Visualizar</button>
+                    </div>
+                </div>
+                <div class="class-card">
+                    <img src="treino.png" alt="Treinos">
+                    <div class="class-info">
+                        <h3>Treinos</h3>
+                        <button onclick="changePage('public/prog_web/treinos','treinos.html')">Visualizar</button>
+                    </div>
+                </div>
+                <div class="class-card">
+                    <img src="boxe.png" alt="Aulas Especiais">
+                    <div class="class-info">
+                        <h3>Aulas Especiais</h3>
+                        <button onclick="changePage('public/prog_web/aulasEspeciais','aulasEspeciais.html')">Visualizar</button>
+                    </div>
+                </div>
+                <div class="class-card">
+                    <img src="cargo.jpeg" alt="Cargo">
+                    <div class="class-info">
+                        <h3>Cargo</h3>
+                        <button onclick="changePage('public/prog_web/cargos','cargos.html')">Visualizar</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- JavaScript para alternar o menu hambúrguer -->
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("active");
+        }
+    </script>
+</body>
+</html>

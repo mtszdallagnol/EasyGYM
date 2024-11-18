@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGym - Gerenciar Cargos</title>
+    <link rel="stylesheet" href="cargos.css">
+    <link rel="stylesheet" href="../main.css">
+
+    <!-- Link para o arquivo JavaScript externo -->
+    <script src="cargos.js"></script>
+</head>
+<body>
+<div class="container">
+    <!-- Menu lateral com barra de navegação -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h1>EASYGYM</h1>
+            <p>FITNESS SOFTWARE</p>
+        </div>
+        <nav class="menu">
+            <a href="../gerenciamento/gerenciamento.html">Menu</a>
+            <a href="../aluno/aluno.html">Alunos</a>
+            <a href="../aulasEspeciais/aulasEspeciais.html">Aulas Esp.</a>
+            <a href="../cargos/cargos.html" class="active">Cargos</a>
+            <a href="../instrutor/instrutor.html">Instrutores</a>
+            <a href="../maquina/maquina.html">Máquinas</a>
+            <a href="../treinos/treinos.html">Treinos</a>
+        </nav>
+        <div class="logout">
+            <a href="#">Sair</a>
+        </div>
+    </aside>
+
+    <!-- Ícone de menu hambúrguer para dispositivos móveis -->
+    <div class="hamburger" onclick="toggleSidebar()">
+        ☰
+    </div>
+
+    <!-- Botões para ações -->
+    <div class="button-group">
+        <button class="btn btn-add" id="adicionar-cargo">Adicionar Cargo</button>
+    </div>
+
+    <!-- Tabela de Cargos -->
+    <table id="tabela-cargos">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome do Cargo</th>
+            <th>Descrição</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- As linhas da tabela serão inseridas via JavaScript -->
+        </tbody>
+    </table>
+
+    <!-- Modal de Adicionar/Editar Cargo -->
+    <div id="modal-container" class="modal-container">
+        <div class="modal-content">
+            <h2 id="modal-titulo">Adicionar Cargo</h2>
+            <form id="form-cargo">
+                <input type="hidden" id="id-cargo" name="id"> <!-- Campo oculto para o ID do cargo -->
+                
+                <label for="nome-cargo">Nome do Cargo:</label>
+                <input type="text" id="nome-cargo" name="cargoName" required maxlength="50"><br><br>
+
+                <label for="descricao">Descrição:</label>
+                <textarea id="descricao" name="description" required maxlength="200"></textarea><br><br>
+
+                <button class="btn btn-edit" type="submit" id="submit-cargo">Salvar</button>
+                <button class="btn btn-delete" type="button" id="fechar-modal">Fechar</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

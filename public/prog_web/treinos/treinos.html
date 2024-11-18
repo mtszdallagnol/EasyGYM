@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EasyGym - Gerenciar Treinos</title>
+    <link rel="stylesheet" href="treinos.css">
+    <link rel="stylesheet" href="../main.css">
+
+    <!-- Link para o arquivo JavaScript externo -->
+    <script src="treinos.js"></script>
+</head>
+<body>
+<div class="container">
+    <!-- Menu lateral com barra de navegação -->
+    <aside class="sidebar" id="sidebar">
+        <div class="logo">
+            <h1>EASYGYM</h1>
+            <p>FITNESS SOFTWARE</p>
+        </div>
+        <nav class="menu">
+            <a href="../gerenciamento/gerenciamento.html">Menu</a>
+            <a href="../aluno/aluno.html">Alunos</a>
+            <a href="../aulasEspeciais/aulasEspeciais.html">Aulas Esp.</a>
+            <a href="../cargos/cargos.html">Cargos</a>
+            <a href="../instrutor/instrutor.html">Instrutores</a>
+            <a href="../maquina/maquina.html">Máquinas</a>
+            <a href="../treinos/treinos.html" class="active">Treinos</a>
+        </nav>
+        <div class="logout">
+            <a href="#">Sair</a>
+        </div>
+    </aside>
+
+    <!-- Ícone de menu hambúrguer para dispositivos móveis -->
+    <div class="hamburger" onclick="toggleSidebar()">
+        ☰
+    </div>
+
+    <!-- Botões para ações -->
+    <div class="button-group">
+        <button class="btn btn-add" id="adicionar-treino">Adicionar Treino</button>
+    </div>
+
+    <!-- Tabela de Treinos -->
+    <table id="tabela-treinos">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome do Exercício</th>
+            <th>Duração</th>
+            <th>Repetições</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <!-- As linhas da tabela serão inseridas via JavaScript -->
+        </tbody>
+    </table>
+
+    <!-- Modal de Adicionar/Editar Treino -->
+    <div id="modal-container" class="modal-container">
+        <div class="modal-content">
+            <h2 id="modal-titulo">Adicionar Treino</h2>
+            <form id="form-treino">
+                <input type="hidden" id="id-treino" name="id"> <!-- Campo oculto para o ID do treino -->
+                <label for="nome-exercicio">Nome do Exercício:</label>
+                <input type="text" id="nome-exercicio" name="name" required><br><br>
+
+                <label for="duracao">Duração:</label>
+                <input type="text" id="duracao" name="duration" required><br><br>
+
+                <label for="repeticoes">Repetições:</label>
+                <input type="text" id="repeticoes" name="repetitions" required><br><br>
+
+                <button class="btn btn-edit" type="submit" id="submit-treino">Salvar</button>
+                <button class="btn btn-delete" type="button" id="fechar-modal">Fechar</button>
+            </form>
+        </div>
+    </div>
+</div>
+</body>
+</html>

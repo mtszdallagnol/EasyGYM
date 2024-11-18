@@ -1,6 +1,9 @@
 <?php
 
 namespace Core;
+
+require_once __DIR__ . "/../models/Academia.php";
+
 use Models\Academia;
 use DateTime;
 use finfo;
@@ -28,12 +31,12 @@ class Utility {
     
     public static function verifyCPF($cpf) {
         if (strlen($cpf) != 11) {
-            echo json_encode(['error' => 'CPF inválido']);
+            echo json_encode(['error', 'CPF inválido']);
             exit;
         }
 
         if (preg_match('/(\d)\1{10}/', $cpf)) {
-            echo json_encode(['error' => 'CPF inválido']);
+            echo json_encode(['error', 'CPF inválido']);
             exit;
         }
 
@@ -43,7 +46,7 @@ class Utility {
             }
             $d = ((10 * $d) % 11) % 10;
             if ($cpf[$c] != $d) {
-                echo json_encode(['error' => 'CPF inválido']);
+                echo json_encode(['error', 'CPF inválido']);
                 exit;
             }
         }
@@ -224,13 +227,19 @@ class Utility {
 
     public static function verifyUint(int $int) {
         if ($int < 0) {
-            die(json_encode(["error" => "Nível de senioridade inválido"]));
+            die(json_encode(["error", "Nível de senioridade inválido"]));
         }
     }
 
     public static function verifyAcademia(int $id) {
         if (count(Academia::getByParams(["id_academia" => $id ?? -1])) < 1) {
             die(json_encode(["error", "Academia não existete"]));
+        }
+    }
+
+    public static function verifyDesc(string $desc) {
+        if (empty($desc) || strlen($desc) > 200) {
+            die(json_encode(["error", "Descrição inválida"]));
         }
     }
 }

@@ -34,6 +34,8 @@ class AcademiaDTO {
 }
 
 class Academia implements ControllerInterace{
+    private function __construct() {}
+    
     public static function getAll(int $id_academia): array {
         $conn = Database::getInstance();
 
